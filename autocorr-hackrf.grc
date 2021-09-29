@@ -32,6 +32,18 @@ options:
     state: enabled
 
 blocks:
+- name: decimate
+  id: variable
+  parameters:
+    comment: ''
+    value: '200'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [624, 40.0]
+    rotation: 0
+    state: true
 - name: freq
   id: variable
   parameters:
@@ -44,6 +56,18 @@ blocks:
     coordinate: [48, 16.0]
     rotation: 0
     state: enabled
+- name: integrate
+  id: variable
+  parameters:
+    comment: ''
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [744, 40.0]
+    rotation: 0
+    state: true
 - name: samp_rate
   id: variable
   parameters:
@@ -56,22 +80,23 @@ blocks:
     coordinate: [184, 16.0]
     rotation: 0
     state: enabled
-- name: blocks_integrate_xx_0
-  id: blocks_integrate_xx
+- name: blocks_deinterleave_0
+  id: blocks_deinterleave
   parameters:
     affinity: ''
     alias: ''
+    blocksize: '1'
     comment: ''
-    decim: '2000'
     maxoutbuf: '0'
     minoutbuf: '0'
+    num_streams: '2'
     type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [808, 220.0]
+    coordinate: [536, 240.0]
     rotation: 0
     state: true
 - name: blocks_multiply_xx_0
@@ -89,7 +114,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [624, 208.0]
+    coordinate: [744, 240.0]
     rotation: 0
     state: true
 - name: dc_blocker_xx_0
@@ -107,7 +132,31 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [392, 212.0]
+    coordinate: [360, 232.0]
+    rotation: 0
+    state: enabled
+- name: low_pass_filter_0
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: samp_rate/(2*decimate)
+    decim: decimate
+    gain: '1'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: samp_rate/(10*decimate)
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 192.0]
     rotation: 0
     state: true
 - name: osmosdr_source_0
@@ -148,7 +197,7 @@ blocks:
     ant8: ''
     ant9: ''
     args: '"hackrf=0,bias=1"'
-    bb_gain0: '20'
+    bb_gain0: '40'
     bb_gain1: '20'
     bb_gain10: '20'
     bb_gain11: '20'
@@ -381,7 +430,7 @@ blocks:
     gain_mode7: 'False'
     gain_mode8: 'False'
     gain_mode9: 'False'
-    if_gain0: '20'
+    if_gain0: '30'
     if_gain1: '20'
     if_gain10: '20'
     if_gain11: '20'
@@ -485,7 +534,7 @@ blocks:
     autoscale: 'True'
     average: '0.2'
     axislabels: 'True'
-    bw: '15000'
+    bw: samp_rate/decimate/2
     color1: '"blue"'
     color10: '"dark blue"'
     color2: '"red"'
@@ -539,13 +588,13 @@ blocks:
     width8: '1'
     width9: '1'
     wintype: window.WIN_BLACKMAN_hARRIS
-    ymax: '10'
-    ymin: '-140'
+    ymax: '-60'
+    ymin: '-100'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1056, 124.0]
+    coordinate: [1168, 292.0]
     rotation: 0
     state: true
 - name: qtgui_waterfall_sink_x_0
@@ -564,7 +613,7 @@ blocks:
     alpha8: '1.0'
     alpha9: '1.0'
     axislabels: 'True'
-    bw: '15000'
+    bw: samp_rate/decimate/2
     color1: '0'
     color10: '0'
     color2: '0'
@@ -606,16 +655,17 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1056, 244.0]
+    coordinate: [1176, 116.0]
     rotation: 0
     state: true
 
 connections:
-- [blocks_integrate_xx_0, '0', qtgui_freq_sink_x_0, '0']
-- [blocks_integrate_xx_0, '0', qtgui_waterfall_sink_x_0, '0']
-- [blocks_multiply_xx_0, '0', blocks_integrate_xx_0, '0']
-- [dc_blocker_xx_0, '0', blocks_multiply_xx_0, '0']
-- [dc_blocker_xx_0, '0', blocks_multiply_xx_0, '1']
+- [blocks_deinterleave_0, '0', blocks_multiply_xx_0, '0']
+- [blocks_deinterleave_0, '1', blocks_multiply_xx_0, '1']
+- [blocks_multiply_xx_0, '0', low_pass_filter_0, '0']
+- [dc_blocker_xx_0, '0', blocks_deinterleave_0, '0']
+- [low_pass_filter_0, '0', qtgui_freq_sink_x_0, '0']
+- [low_pass_filter_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [osmosdr_source_0, '0', dc_blocker_xx_0, '0']
 
 metadata:
