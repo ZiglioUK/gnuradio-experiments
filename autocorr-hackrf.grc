@@ -80,25 +80,6 @@ blocks:
     coordinate: [184, 16.0]
     rotation: 0
     state: enabled
-- name: blocks_deinterleave_0
-  id: blocks_deinterleave
-  parameters:
-    affinity: ''
-    alias: ''
-    blocksize: '1'
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_streams: '2'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [536, 240.0]
-    rotation: 0
-    state: true
 - name: blocks_multiply_xx_0
   id: blocks_multiply_xx
   parameters:
@@ -114,7 +95,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 240.0]
+    coordinate: [632, 232.0]
     rotation: 0
     state: true
 - name: dc_blocker_xx_0
@@ -156,7 +137,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [912, 192.0]
+    coordinate: [824, 184.0]
     rotation: 0
     state: true
 - name: osmosdr_source_0
@@ -531,10 +512,10 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'True'
+    autoscale: 'False'
     average: '0.2'
     axislabels: 'True'
-    bw: samp_rate/decimate/2
+    bw: samp_rate/decimate
     color1: '"blue"'
     color10: '"dark blue"'
     color2: '"red"'
@@ -588,13 +569,13 @@ blocks:
     width8: '1'
     width9: '1'
     wintype: window.WIN_BLACKMAN_hARRIS
-    ymax: '-60'
-    ymin: '-100'
+    ymax: '-80'
+    ymin: '-120'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 292.0]
+    coordinate: [1080, 292.0]
     rotation: 0
     state: true
 - name: qtgui_waterfall_sink_x_0
@@ -613,7 +594,7 @@ blocks:
     alpha8: '1.0'
     alpha9: '1.0'
     axislabels: 'True'
-    bw: samp_rate/decimate/2
+    bw: samp_rate/decimate
     color1: '0'
     color10: '0'
     color2: '0'
@@ -655,15 +636,14 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1176, 116.0]
+    coordinate: [1088, 116.0]
     rotation: 0
     state: true
 
 connections:
-- [blocks_deinterleave_0, '0', blocks_multiply_xx_0, '0']
-- [blocks_deinterleave_0, '1', blocks_multiply_xx_0, '1']
 - [blocks_multiply_xx_0, '0', low_pass_filter_0, '0']
-- [dc_blocker_xx_0, '0', blocks_deinterleave_0, '0']
+- [dc_blocker_xx_0, '0', blocks_multiply_xx_0, '0']
+- [dc_blocker_xx_0, '0', blocks_multiply_xx_0, '1']
 - [low_pass_filter_0, '0', qtgui_freq_sink_x_0, '0']
 - [low_pass_filter_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [osmosdr_source_0, '0', dc_blocker_xx_0, '0']
